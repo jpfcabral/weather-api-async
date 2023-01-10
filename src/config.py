@@ -9,3 +9,5 @@ class Settings(BaseSettings):
     Store environment variables
     '''
     API_VERSION: str = '0.0.1-alpha'
+    OPEN_WEATHER_HOST: str = 'https://api.openweathermap.org'
+    OPEN_WEATHER_API_KEY: str
