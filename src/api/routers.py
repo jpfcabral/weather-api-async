@@ -6,7 +6,16 @@ from src.api.services import APIServices
 router = APIRouter()
 
 @cbv(router)
-class APIRouter:
+class APIRouters:
+    '''
+    Encapsulates all API related routers
+
+    Args:
+        api_service (APIServices): Object to perform api services
+
+    Attributes:
+        api_service (APIServices): Internal object to perform api services
+    '''
     def __init__(
         self,
         api_service: APIServices = Depends(APIServices)
@@ -16,4 +25,5 @@ class APIRouter:
 
     @router.post('/')
     async def collect_weather_data(self, user_id: int):
-        return await self.api_service.send_task(user_id)
+        ''' This router runs a service to collect weather data '''
+        return await self.api_service.collect_weather_data(user_id)
