@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Dict
 import requests
 from fastapi import Depends, HTTPException
-from src.config import Settings
+from src.config.settings import Settings
 from src.weather.repository import WeatherRepository
 from src.weather.models import WeatherData, Weather
 

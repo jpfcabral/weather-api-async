@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from src.config import Settings
+from src.config.settings import Settings
 
 settings = Settings()
 

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from src.weather.routers import router as api_router
-from src.config import Settings
+from src.config.settings import Settings
 
 settings = Settings()
 
