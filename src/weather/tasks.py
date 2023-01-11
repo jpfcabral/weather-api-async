@@ -15,10 +15,10 @@ app = Celery(
     backend=settings.CELERY_BACKEND_URL
     )
 
-@app.task()
-def request_weather_data(user_id: int):
+@app.task(bind=True)
+def request_weather_data(self, user_id: int):
     ''' Request all weather data async '''
-
+    count = 0
     for city_id in CITY_IDS:
         response = requests.post(
             f'{settings.OPEN_WEATHER_HOST}/data/2.5/weather?' \
@@ -26,5 +26,10 @@ def request_weather_data(user_id: int):
             f'&units=metric',
             timeout=10
         )
+        count += 1
+        percentage = round(count / len(CITY_IDS), 3)
+        self.update_state(state='PROGRESS', meta={'progress': percentage})
 
         logger.info(response.status_code)
+
+    self.update_state(state='COMPLETED', meta={'progress': percentage})

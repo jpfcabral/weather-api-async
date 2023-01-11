@@ -4,6 +4,7 @@ from src.config.settings import Settings
 from src.weather.models import Weather
 from src.weather.repository import WeatherRepository
 from src.weather.tasks import request_weather_data
+from celery.result import AsyncResult
 
 settings = Settings()
 
@@ -31,8 +32,13 @@ class WeatherServices:
 
     async def get_task_status(self, user_id: int):
         ''' Get status from a task created '''
+        response = {}
         weather_doc = self.repository.read_by_user_id(user_id)
 
-        res = request_weather_data.AsyncResult(weather_doc['task_id']).state
-        print(res)
-        return weather_doc
+        result = AsyncResult(weather_doc['task_id'])
+        response['status'] = result.state
+
+        if result.info:
+            response['progress'] = result.info['progress']
+
+        return response
