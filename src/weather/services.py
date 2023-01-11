@@ -1,10 +1,9 @@
 from datetime import datetime
-from typing import Dict
-import requests
-from fastapi import Depends, HTTPException
+from fastapi import Depends
 from src.config.settings import Settings
+from src.weather.models import Weather
 from src.weather.repository import WeatherRepository
-from src.weather.models import WeatherData, Weather
+from src.weather.tasks import request_weather_data
 
 settings = Settings()
 
@@ -16,36 +15,24 @@ class WeatherServices:
     def __init__(self, repository: WeatherRepository = Depends(WeatherRepository)) -> None:
         self.repository = repository
 
-    async def collect_weather_data_and_save(self, user_id: int, city_id: int):
+    async def collect_weather_data_and_save(self, user_id: int):
         ''' Create a task to request weather data '''
-        response = requests.post(
-            f'{settings.OPEN_WEATHER_HOST}/data/2.5/weather?' \
-            f'id={city_id}&appid={settings.OPEN_WEATHER_API_KEY}' \
-            f'&units=metric',
-            timeout=10
-        )
+        task_id = request_weather_data.delay(user_id).id
 
-        if response.status_code != 200:
-            raise HTTPException(status_code=503, detail='3rd party API not available')
-
-        data = response.json()['main']
-        await self.save_weather_data(user_id, city_id, data)
-
-        return response.json()
-
-    async def save_weather_data(self, user_id: int, city_id: int, data: Dict):
-        ''' Save weather data info in database '''
-        weather_data = WeatherData(
-            city_id=city_id,
-            temperature_celsius=data['temp'],
-            humidity=data['humidity']
-            )
         weather = Weather(
             user_id=user_id,
             request_datetime=datetime.now(),
-            weather_data=weather_data
-            ).dict()
+            task_id=task_id
+            )
 
-        doc_id = await self.repository.insert(weather)
+        self.repository.insert(weather.dict())
 
-        return doc_id
+        return weather
+
+    async def get_task_status(self, user_id: int):
+        ''' Get status from a task created '''
+        weather_doc = self.repository.read_by_user_id(user_id)
+
+        res = request_weather_data.AsyncResult(weather_doc['task_id']).state
+        print(res)
+        return weather_doc

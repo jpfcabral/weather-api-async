@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -13,4 +14,5 @@ class Weather(BaseModel):
     ''' Weather Schema Model '''
     user_id: int
     request_datetime: datetime
-    weather_data: WeatherData
+    task_id: str
+    weather_data: Optional[WeatherData]

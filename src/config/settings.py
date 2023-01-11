@@ -14,4 +14,6 @@ class Settings(BaseSettings):
 
     DB_HOST: str = 'mongodb://localhost:27017/'
     DB_NAME: str = 'test-db'
+
+    CELERY_BROKER_URL: str = 'pyamqp://guest@localhost//'
     CELERY_BACKEND_URL: str = 'redis://localhost:6379/0'

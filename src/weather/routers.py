@@ -24,6 +24,11 @@ class WeatherRouters:
         self.api_service = api_service
 
     @router.post('/')
-    async def collect_weather_data(self, user_id: int, city_id: int):
+    async def collect_weather_data(self, user_id: int):
         ''' This router runs a service to collect weather data '''
-        return await self.api_service.collect_weather_data_and_save(user_id, city_id)
+        return await self.api_service.collect_weather_data_and_save(user_id)
+
+    @router.get('/')
+    async def get_task_status(self, user_id: int):
+        ''' Get status for a celery task '''
+        return await self.api_service.get_task_status(user_id)
