@@ -11,3 +11,6 @@ class Settings(BaseSettings):
     API_VERSION: str = '0.0.1-alpha'
     OPEN_WEATHER_HOST: str = 'https://api.openweathermap.org'
     OPEN_WEATHER_API_KEY: str
+
+    DB_HOST: str = 'mongodb://localhost:27017/'
+    DB_NAME: str = 'test-db'
