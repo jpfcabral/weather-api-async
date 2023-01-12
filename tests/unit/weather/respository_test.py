@@ -1,0 +1,35 @@
+from datetime import datetime
+import pytest
+from src.weather.repository import WeatherRepository
+from src.weather.models import Weather, WeatherModel
+
+@pytest.fixture
+def weather_repository():
+    return WeatherRepository()
+
+def test_insert(weather_repository: WeatherRepository):
+    weather = WeatherModel(
+        user_id=123,
+        request_datetime=datetime.now(),
+        task_id='task-id'
+    )
+
+    weather_repository.insert(weather)
+
+    weather_db = Weather.objects(user_id=123)
+
+    assert len(list(weather_db)) == 1
+
+def test_read_by_user_id(weather_repository: WeatherRepository):
+    data = WeatherModel(
+        user_id=123,
+        request_datetime=datetime.now(),
+        task_id='task-id'
+    )
+    Weather(**data.dict()).save()
+    weather = weather_repository.read_by_user_id(123)
+
+    assert weather['id'] is not None
+    assert weather['user_id'] == 123
+    assert isinstance(weather['request_datetime'], datetime)
+    assert weather['task_id'] == 'task-id'
