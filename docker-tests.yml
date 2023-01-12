@@ -1,0 +1,10 @@
+version: '3.2'
+services:
+  unit-tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: >
+      sh -c "ls &&
+            coverage run --source ./src -m pytest ./tests/unit &&
+            coverage report"

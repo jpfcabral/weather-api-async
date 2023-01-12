@@ -1,0 +1,46 @@
+version: '3.2'
+
+services:
+  weather-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - 8000:8000
+    environment:
+      - OPEN_WEATHER_HOST=https://api.openweathermap.org
+      - OPEN_WEATHER_API_KEY=076fa90147cf4bf44bef6859d0616710
+      - DB_HOST=mongodb://database:27017/
+      - DB_NAME=test-db
+      - CELERY_BROKER_URL=pyamqp://guest@broker//
+      - CELERY_BACKEND_URL=redis://backend:6379/0
+
+  weather-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A src.weather.tasks worker --loglevel=info
+    environment:
+      - OPEN_WEATHER_HOST=https://api.openweathermap.org
+      - OPEN_WEATHER_API_KEY=076fa90147cf4bf44bef6859d0616710
+      - DB_HOST=mongodb://database:27017/
+      - DB_NAME=test-db
+      - CELERY_BROKER_URL=pyamqp://guest@broker//
+      - CELERY_BACKEND_URL=redis://backend:6379/0
+
+  broker:
+    image: rabbitmq:3-management
+    ports:
+      - 15672:15672
+      - 5672:5672
+
+  database:
+    image: mongo:latest
+    ports:
+      - 27017:27017
+  
+  backend:
+    image: redis
+    ports:
+      - 6379:6379
