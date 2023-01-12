@@ -1,10 +1,10 @@
 from datetime import datetime
 from fastapi import Depends
+from celery.result import AsyncResult
 from src.config.settings import Settings
-from src.weather.models import Weather
+from src.weather.models import WeatherModel
 from src.weather.repository import WeatherRepository
 from src.weather.tasks import request_weather_data
-from celery.result import AsyncResult
 
 settings = Settings()
 
@@ -20,15 +20,15 @@ class WeatherServices:
         ''' Create a task to request weather data '''
         task_id = request_weather_data.delay(user_id).id
 
-        weather = Weather(
+        weather = WeatherModel(
             user_id=user_id,
             request_datetime=datetime.now(),
             task_id=task_id
             )
 
-        self.repository.insert(weather.dict())
+        weather_db = self.repository.insert(weather)
 
-        return weather
+        return weather_db
 
     async def get_task_status(self, user_id: int):
         ''' Get status from a task created '''
@@ -38,7 +38,7 @@ class WeatherServices:
         result = AsyncResult(weather_doc['task_id'])
         response['status'] = result.state
 
-        if result.info:
-            response['progress'] = result.info['progress']
+        if response['status'] == 'PROGRESS':
+            response = response | result.info
 
-        return response
+        return response | weather_doc

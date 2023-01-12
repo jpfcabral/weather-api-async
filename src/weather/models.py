@@ -1,6 +1,15 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
+from mongoengine import Document, StringField, IntField, DateField, ListField
+
+
+class Weather(Document):
+    ''' Weather database repository '''
+    user_id = IntField()
+    request_datetime = DateField()
+    task_id = StringField()
+    weather_data = ListField()
 
 
 class WeatherData(BaseModel):
@@ -10,7 +19,7 @@ class WeatherData(BaseModel):
     humidity: int
 
 
-class Weather(BaseModel):
+class WeatherModel(BaseModel):
     ''' Weather Schema Model '''
     user_id: int
     request_datetime: datetime
