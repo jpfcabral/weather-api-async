@@ -13,7 +13,7 @@ class WeatherServices:
     '''
     Encapsulates all API related business logic
     '''
-    def __init__(self, repository: WeatherRepository = Depends(WeatherRepository)) -> None:
+    def __init__(self, repository: WeatherRepository = WeatherRepository()) -> None:
         self.repository = repository
 
     async def collect_weather_data_and_save(self, user_id: int):

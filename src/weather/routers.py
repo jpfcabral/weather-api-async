@@ -16,12 +16,9 @@ class WeatherRouters:
     Attributes:
         api_service (APIServices): Internal object to perform api services
     '''
-    def __init__(
-        self,
-        api_service: WeatherServices = Depends(WeatherServices)
-        ) -> None:
+    def __init__(self) -> None:
 
-        self.api_service = api_service
+        self.api_service = WeatherServices()
 
     @router.post('/')
     async def collect_weather_data(self, user_id: int):
