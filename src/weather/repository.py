@@ -1,5 +1,4 @@
 from typing import Dict
-
 from src.weather.models import Weather, WeatherModel
 
 class WeatherRepository:
@@ -18,9 +17,12 @@ class WeatherRepository:
 
     def read_by_user_id(self, user_id: int) -> Dict:
         ''' Get a document from database by user_id field'''
-        weather = list(Weather.objects(user_id=user_id))[0]
-        weather_dict = weather.to_mongo().to_dict()
-        weather_dict['id'] = str(weather_dict['_id'])
-        del weather_dict['_id']
+        try:
+            weather = list(Weather.objects(user_id=user_id))[0]
+            weather_dict = weather.to_mongo().to_dict()
+            weather_dict['id'] = str(weather_dict['_id'])
+            del weather_dict['_id']
+        except:
+            return None
 
         return weather_dict

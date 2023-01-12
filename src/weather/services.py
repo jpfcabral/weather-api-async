@@ -1,5 +1,5 @@
 from datetime import datetime
-from fastapi import Depends
+from fastapi import HTTPException
 from celery.result import AsyncResult
 from src.config.settings import Settings
 from src.weather.models import WeatherModel
@@ -34,6 +34,9 @@ class WeatherServices:
         ''' Get status from a task created '''
         response = {}
         weather_doc = self.repository.read_by_user_id(user_id)
+
+        if not weather_doc:
+            raise HTTPException(status_code=404, detail='User not found')
 
         result = AsyncResult(weather_doc['task_id'])
         response['status'] = result.state

@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Dict, Optional
 import pytest
 from pydantic import BaseModel
+from fastapi import HTTPException
 from src.weather.models import Weather, WeatherModel
 from src.weather.services import WeatherServices
 
@@ -49,3 +50,18 @@ async def test_get_task_status_progress(mocker, weather_services: WeatherService
     assert data['progress'] == 0.161
     assert data['user_id'] == 123
     assert data['id'] is not None
+
+@pytest.mark.asyncio
+async def test_get_task_status_progress_not_found_user(mocker, weather_services: WeatherServices):
+    with pytest.raises(HTTPException):
+        mocker.patch(
+            'src.weather.services.AsyncResult',
+            return_value=TaskResult(
+                id='456-456',
+                state='PROGRESS',
+                info={'progress': 0.161}
+            )
+        )
+
+        data = await weather_services.get_task_status(123)
+

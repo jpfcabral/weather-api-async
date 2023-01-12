@@ -33,3 +33,9 @@ def test_read_by_user_id(weather_repository: WeatherRepository):
     assert weather['user_id'] == 123
     assert isinstance(weather['request_datetime'], datetime)
     assert weather['task_id'] == 'task-id'
+
+def test_read_by_user_id_error(weather_repository: WeatherRepository):
+
+    weather = weather_repository.read_by_user_id(123)
+
+    assert weather is None
