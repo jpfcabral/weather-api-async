@@ -34,3 +34,25 @@ def test_collect_weather_data_no_provided_user_id(mocker):
     response = client.post('/weather/')
 
     assert response.status_code == 422
+
+def test_get_task_status(mocker):
+    mocker.patch(
+        'src.weather.routers.WeatherServices.get_task_status',
+        return_value={
+            "status": "SUCCESS",
+            "user_id": 456,
+            "request_datetime": "2023-01-12T00:00:00",
+            "task_id": "dd53e8a9-ae4f-45fa-917e-a048caf8f59f",
+            "weather_data": [],
+            "id": "63c01ef9c608c660566fdd15"
+        }
+    )
+
+    response = client.get('/weather/', params={'user_id':456})
+
+    assert response.status_code == 200
+
+def test_get_task_status_no_provided_user_id(mocker):
+    response = client.get('/weather/')
+
+    assert response.status_code == 422
