@@ -1,3 +1,4 @@
+from time import sleep
 import requests
 from celery import Celery
 from celery.utils.log import get_logger
@@ -16,7 +17,7 @@ app = Celery(
     )
 
 @app.task(bind=True)
-def request_weather_data(self, user_id: int):
+def request_weather_data(self, user_id: int, req_delay: float = 1.0):
     ''' Request all weather data async '''
     count = 0
     for city_id in CITY_IDS:
@@ -29,6 +30,7 @@ def request_weather_data(self, user_id: int):
         count += 1
         percentage = round(count / len(CITY_IDS), 3)
         self.update_state(state='PROGRESS', meta={'progress': percentage})
+        sleep(req_delay)
 
         logger.info(response.status_code)
 
