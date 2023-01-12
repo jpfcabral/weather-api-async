@@ -6,7 +6,7 @@ from mongoengine import Document, StringField, IntField, DateField, ListField
 
 class Weather(Document):
     ''' Weather database repository '''
-    user_id = IntField()
+    user_id = IntField(unique=True)
     request_datetime = DateField()
     task_id = StringField()
     weather_data = ListField()
