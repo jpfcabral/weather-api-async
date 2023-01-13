@@ -73,3 +73,15 @@ def test_insert_weather_data(weather_repository: WeatherRepository):
     )
 
     weather_repository.insert_weather_data(123, weather_data)
+
+def test_update_task_id(weather_repository: WeatherRepository):
+    data = WeatherModel(
+        user_id=123,
+        request_datetime=datetime.now(),
+        task_id='task-id'
+    )
+    Weather(**data.dict()).save()
+
+    weather = weather_repository.update_task_id(123, 'new-task-id')
+
+    assert weather['task_id'] == 'new-task-id'

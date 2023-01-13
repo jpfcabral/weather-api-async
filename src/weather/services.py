@@ -26,8 +26,10 @@ class WeatherServices:
             task_id=task_id
             )
 
-        weather_db = self.repository.insert(weather)
+        if self.repository.read_by_user_id(user_id):
+            return self.repository.update_task_id(user_id, task_id)
 
+        weather_db = self.repository.insert(weather)
         return weather_db
 
     async def get_task_status(self, user_id: int):

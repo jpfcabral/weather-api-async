@@ -36,3 +36,7 @@ class WeatherRepository:
         weather = Weather.objects(user_id=user_id).first()
         weather.weather_data.append(WeatherData(**weather_data.dict()))
         weather.save()
+
+    def update_task_id(self, user_id: int, task_id: str) -> Dict:
+        Weather.objects(user_id=user_id).update_one(set__task_id=task_id)
+        return self.read_by_user_id(user_id)

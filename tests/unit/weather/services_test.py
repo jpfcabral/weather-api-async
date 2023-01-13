@@ -28,6 +28,25 @@ async def test_collect_weather_data_and_save(mocker, weather_services: WeatherSe
     assert task['task_id'] == '456-456'
 
 @pytest.mark.asyncio
+async def test_collect_weather_data_and_save_user_exists(mocker, weather_services: WeatherServices):
+    data = WeatherModel(
+        user_id=123,
+        request_datetime=datetime.now(),
+        task_id='task-id'
+    )
+    Weather(**data.dict()).save()
+
+    mocker.patch(
+        'src.weather.tasks.request_weather_data.delay',
+        return_value=TaskResult(id='new-task-id')
+    )
+
+    task = await weather_services.collect_weather_data_and_save(123)
+
+    assert task['user_id'] == 123
+    assert task['task_id'] == 'new-task-id'
+
+@pytest.mark.asyncio
 async def test_get_task_status_progress(mocker, weather_services: WeatherServices):
     mocker.patch(
         'src.weather.services.AsyncResult',
