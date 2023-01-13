@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from fastapi_utils.cbv import cbv
 
 from src.weather.services import WeatherServices

@@ -1,7 +1,7 @@
 from typing import Dict
 from mongoengine.errors import NotUniqueError
 from fastapi import HTTPException
-from src.weather.models import Weather, WeatherModel
+from src.weather.models import Weather, WeatherData, WeatherDataModel, WeatherModel
 
 class WeatherRepository:
     ''' Weather database repository '''
@@ -31,3 +31,8 @@ class WeatherRepository:
             return None
 
         return weather_dict
+
+    def insert_weather_data(self, user_id: int, weather_data: WeatherDataModel):
+        weather = Weather.objects(user_id=user_id).first()
+        weather.weather_data.append(WeatherData(**weather_data.dict()))
+        weather.save()

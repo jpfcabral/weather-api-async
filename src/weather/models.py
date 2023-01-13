@@ -1,21 +1,27 @@
 from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel
-from mongoengine import Document, StringField, IntField, DateField, ListField
+import mongoengine as me
 
 
-class Weather(Document):
+class WeatherData(me.EmbeddedDocument):
+    city_id = me.IntField()
+    temp = me.DecimalField()
+    humidity = me.DecimalField()
+
+
+class Weather(me.Document):
     ''' Weather database repository '''
-    user_id = IntField(unique=True)
-    request_datetime = DateField()
-    task_id = StringField()
-    weather_data = ListField()
+    user_id = me.IntField(unique=True)
+    request_datetime = me.DateField()
+    task_id = me.StringField()
+    weather_data = me.ListField()
 
 
-class WeatherData(BaseModel):
+class WeatherDataModel(BaseModel):
     ''' Weather Data View '''
     city_id: int
-    temperature_celsius: float
+    temp: float
     humidity: int
 
 
@@ -24,4 +30,4 @@ class WeatherModel(BaseModel):
     user_id: int
     request_datetime: datetime
     task_id: str
-    weather_data: Optional[WeatherData]
+    weather_data: Optional[WeatherDataModel]

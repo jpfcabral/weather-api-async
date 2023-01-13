@@ -1,9 +1,10 @@
 import pytest
-from mongoengine import connect, disconnect
+import mongoengine as me
 
 @pytest.fixture(scope='function', autouse=True)
 def mock_mongo():
     ''' Mocks mongo database '''
-    connect('mongoenginetest', host='mongomock://localhost')
+    me.disconnect()
+    me.connect('mongoenginetest', host='mongomock://localhost')
     yield
-    disconnect()
+    me.disconnect()

@@ -2,7 +2,7 @@ from datetime import datetime
 import pytest
 from fastapi import HTTPException
 from src.weather.repository import WeatherRepository
-from src.weather.models import Weather, WeatherModel
+from src.weather.models import Weather, WeatherDataModel, WeatherModel
 
 @pytest.fixture
 def weather_repository():
@@ -57,3 +57,19 @@ def test_read_by_user_id_error(weather_repository: WeatherRepository):
     weather = weather_repository.read_by_user_id(123)
 
     assert weather is None
+
+def test_insert_weather_data(weather_repository: WeatherRepository):
+    data = WeatherModel(
+        user_id=123,
+        request_datetime=datetime.now(),
+        task_id='task-id'
+    )
+    Weather(**data.dict()).save()
+
+    weather_data = WeatherDataModel(
+        city_id=456,
+        temp=33.6,
+        humidity=24
+    )
+
+    weather_repository.insert_weather_data(123, weather_data)
