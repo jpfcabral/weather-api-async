@@ -6,7 +6,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     '''
-    Store environment variables
+    Provide environment variables
     '''
     API_VERSION: str = '0.0.1-alpha'
     OPEN_WEATHER_HOST: str = 'https://api.openweathermap.org'

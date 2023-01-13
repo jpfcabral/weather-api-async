@@ -72,7 +72,7 @@ def test_insert_weather_data(weather_repository: WeatherRepository):
         humidity=24
     )
 
-    weather_repository.insert_weather_data(123, weather_data)
+    weather_repository.insert_city_weather_data(123, weather_data)
 
 def test_update_task_id(weather_repository: WeatherRepository):
     data = WeatherModel(

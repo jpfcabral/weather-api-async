@@ -14,7 +14,7 @@ def test_request_weather_data(mocker):
         return_value=None
     )
     mocker.patch(
-        'src.weather.tasks.request_weather_data.weather_repository.insert_weather_data',
+        'src.weather.tasks.request_weather_data.weather_repository.insert_city_weather_data',
         return_value=None
     )
 
@@ -35,7 +35,7 @@ def test_request_weather_data_error(mocker):
             return_value=None
         )
         mocker.patch(
-            'src.weather.tasks.request_weather_data.weather_repository.insert_weather_data',
+            'src.weather.tasks.request_weather_data.weather_repository.insert_city_weather_data',
             return_value=None
         )
 

@@ -1,6 +1,9 @@
 from datetime import datetime
+from typing import Dict
+
 from fastapi import HTTPException
 from celery.result import AsyncResult
+
 from src.config.settings import Settings
 from src.weather.models import WeatherModel
 from src.weather.repository import WeatherRepository
@@ -10,14 +13,25 @@ settings = Settings()
 
 
 class WeatherServices:
-    '''
-    Encapsulates all API related business logic
-    '''
+    """
+    Provide all logic operations from weather related data
+
+    Attributes:
+    repository (WeatherRepository): dependencie to perform database operations
+    """
     def __init__(self, repository: WeatherRepository = WeatherRepository()) -> None:
         self.repository = repository
 
-    async def collect_weather_data_and_save(self, user_id: int):
-        ''' Create a task to request weather data '''
+    async def collect_weather_data_and_save(self, user_id: int) -> Dict:
+        """
+        Get user id and perform the business rules to celery
+        task creation and data storage in database
+
+        Args:
+            user_id (int): User identifier.
+        Returns:
+            Dict: User and task state from database
+        """
         task_id = request_weather_data.delay(user_id).id
 
         weather = WeatherModel(
@@ -32,8 +46,16 @@ class WeatherServices:
         weather_db = self.repository.insert(weather)
         return weather_db
 
-    async def get_task_status(self, user_id: int):
-        ''' Get status from a task created '''
+    async def get_task_status(self, user_id: int) -> Dict:
+        """
+        Get user id and perform all business rules about
+        a user task state
+
+        Args:
+            user_id (int): User identifier.
+        Returns:
+            Dict: User and task state from database
+        """
         response = {}
         weather_doc = self.repository.read_by_user_id(user_id)
 

@@ -60,7 +60,7 @@ class WeatherRequestTask(Task):
         for data in data_list:
             city_id = data['id']
             weather_data = data['main'] | {'city_id': city_id}
-            self.weather_repository.insert_weather_data(user_id, WeatherDataModel(**weather_data))
+            self.weather_repository.insert_city_weather_data(user_id, WeatherDataModel(**weather_data))
 
 
     def request_open_weather_api(self, city_id: int):

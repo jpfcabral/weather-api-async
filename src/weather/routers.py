@@ -10,9 +10,6 @@ class WeatherRouters:
     '''
     Encapsulates all API related routers
 
-    Args:
-        api_service (APIServices): Object to perform api services
-
     Attributes:
         api_service (APIServices): Internal object to perform api services
     '''
@@ -22,10 +19,24 @@ class WeatherRouters:
 
     @router.post('/')
     async def collect_weather_data(self, user_id: int):
-        ''' This router runs a service to collect weather data '''
+        """
+        Router to perform weather data extraction
+
+        Args:
+            user_id (int): User identifier.
+        Returns:
+            Dict: User and task state from database
+        """
         return await self.api_service.collect_weather_data_and_save(user_id)
 
     @router.get('/')
     async def get_task_status(self, user_id: int):
-        ''' Get status for a celery task '''
+        """
+        Provide user task status
+
+        Args:
+            user_id (int): User identifier.
+        Returns:
+            Dict: User and task state from database
+        """
         return await self.api_service.get_task_status(user_id)

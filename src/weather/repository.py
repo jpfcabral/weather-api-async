@@ -4,10 +4,20 @@ from fastapi import HTTPException
 from src.weather.models import Weather, WeatherData, WeatherDataModel, WeatherModel
 
 class WeatherRepository:
-    ''' Weather database repository '''
+    """
+    Provide database abstraction operations to
+    weather related data
+    """
 
     def insert(self, data: WeatherModel) -> Dict:
-        ''' Used to insert data in database '''
+        '''
+        Used to insert weather data in database
+
+        Args:
+            data (WeatherModel): weather data to insert.
+        Returns:
+            Dict: inserted weather data
+        '''
         try:
             weather_db = Weather(**data.dict())
             weather_db.save().to_mongo()
@@ -21,7 +31,14 @@ class WeatherRepository:
             raise HTTPException(status_code=422, detail='User already exists')
 
     def read_by_user_id(self, user_id: int) -> Dict:
-        ''' Get a document from database by user_id field'''
+        '''
+        Get a document from database by user_id field
+
+        Args:
+            user_id (int): User identifier.
+        Returns:
+            Dict: Related weather data
+        '''
         try:
             weather = list(Weather.objects(user_id=user_id))[0]
             weather_dict = weather.to_mongo().to_dict()
@@ -32,11 +49,29 @@ class WeatherRepository:
 
         return weather_dict
 
-    def insert_weather_data(self, user_id: int, weather_data: WeatherDataModel):
+    def insert_city_weather_data(self, user_id: int, weather_data: WeatherDataModel) -> None:
+        '''
+        Insert city weather data to a specific user id
+
+        Args:
+            user_id (int): User identifier.
+            weather_data (WeatherDataModel): Related city weather data.
+        Returns:
+            Dict: Related weather data
+        '''
         weather = Weather.objects(user_id=user_id).first()
         weather.weather_data.append(WeatherData(**weather_data.dict()))
         weather.save()
 
     def update_task_id(self, user_id: int, task_id: str) -> Dict:
+        '''
+        Update task id field for a specific user id
+
+        Args:
+            user_id (int): User identifier.
+            task_id (str): Task identidier.
+        Returns:
+            Dict: Related weather data
+        '''
         Weather.objects(user_id=user_id).update_one(set__task_id=task_id)
         return self.read_by_user_id(user_id)
