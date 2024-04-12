@@ -1,5 +1,10 @@
 # Weather API
 
+The purpose of this repository is to show a simple (but complete) async job queue system using FastAPI and Celery.
+
+
+The intention is to make ~200 requests to the [Weather API](https://openweathermap.org/api) with only one request in our applicantion. So that there is [fault tolerance](https://en.wikipedia.org/wiki/Fault_tolerance)
+
 ## Running
 
 It is highly recommended to use the [Docker](https://www.docker.com/) environment for both running and testing this repository. Using docker as a way to execute scripts allows for greater replicability during testing, as it provides isolation from the operating system on which the developer is running the software, containers also package the application and its dependencies together, making it easy to move the application between different environments. This allows for consistent behavior across development, testing, and production environments.
