@@ -2,8 +2,10 @@ from datetime import datetime
 from typing import Dict
 
 from fastapi import HTTPException
-from celery.result import AsyncResult
+from celery.result import AsyncResult, GroupResult
+from celery import group
 
+from src.config.city_ids import CITY_IDS
 from src.config.settings import Settings
 from src.weather.models import WeatherModel
 from src.weather.repository import WeatherRepository
@@ -32,7 +34,19 @@ class WeatherServices:
         Returns:
             Dict: User and task state from database
         """
-        task_id = request_weather_data.delay(user_id).id
+        tasks = []
+
+        for city_id in CITY_IDS:
+            tasks.append(
+                request_weather_data.si(
+                    user_id=user_id,
+                    city_id=city_id,
+                )
+            )
+
+        task_group = group(tasks)
+        task_group_result: AsyncResult = task_group.apply_async()
+        task_id = task_group_result.id
 
         weather = WeatherModel(
             user_id=user_id,

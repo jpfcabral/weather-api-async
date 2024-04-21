@@ -29,5 +29,5 @@ class WeatherModel(BaseModel):
     ''' Weather Schema Model '''
     user_id: int
     request_datetime: datetime
-    task_id: str
+    task_id: Optional[str]
     weather_data: Optional[WeatherDataModel]

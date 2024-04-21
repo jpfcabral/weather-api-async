@@ -89,8 +89,12 @@ class WeatherRequestTask(Task):
             )
         return response
 
-@app.task(bind=True, base=WeatherRequestTask)
-def request_weather_data(self, user_id: int, req_delay: float = 1.0):
+@app.task(
+    bind=True,
+    base=WeatherRequestTask,
+    autoretry_for=(Exception,)
+    )
+def request_weather_data(self, user_id: int, city_id: int):
     """
     This task perform requests to Open Weather API
     and store the response into mongodb by user_id
@@ -99,19 +103,10 @@ def request_weather_data(self, user_id: int, req_delay: float = 1.0):
         user_id (int): User identifier.
         req_delay (float): Delay for each request to open weather.
     """
-    count = 0
-    weather_data_list = []
+    response = self.request_open_weather_api(city_id)
+    content = response.json()
 
-    for city_id in CITY_IDS:
+    city_id = content['id']
+    weather_data = content['main'] | {'city_id': city_id}
 
-        response = self.request_open_weather_api(city_id)
-        weather_data_list.append(response.json())
-
-        # Update task state
-        percentage = round(count / len(CITY_IDS), 3)
-        self.update_state(state='PROGRESS', meta={'progress': percentage})
-        count += 1
-        sleep(req_delay)
-
-    self.store_weather_data_list(user_id, weather_data_list)
-    self.update_state(state='COMPLETED', meta={'progress': percentage})
+    self.weather_repository.insert_city_weather_data(user_id, WeatherDataModel(**weather_data))
